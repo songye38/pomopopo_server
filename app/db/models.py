@@ -48,12 +48,12 @@ class Pomodoro(Base):
 class Session(Base):
     __tablename__ = "sessions"
     id = Column(Integer, primary_key=True, index=True)
-    pomodoro_id = Column(Integer, ForeignKey("pomodoros.id"))
+    pomodoro_id = Column(UUID(as_uuid=True), ForeignKey("pomodoros.id"))
     type_id = Column(Integer, ForeignKey("session_types.id"))
     goal = Column(String, nullable=False)
     duration = Column(Integer)
     order = Column(Integer)
-    
+
     pomodoro = relationship("Pomodoro", back_populates="sessions")
     session_type = relationship("SessionType", back_populates="sessions")
 
