@@ -4,7 +4,7 @@ import jwt
 from app.auth.auth import verify_access_token
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials,OAuth2PasswordBearer
-from app.auth.auth import verify_access_token, is_token_blacklisted,create_access_token
+from app.auth.auth import verify_access_token
 from jose import JWTError
 from sqlalchemy.orm import Session
 from app.db.database import get_db
@@ -73,12 +73,13 @@ def get_current_user(request: Request, db: Session = Depends(get_db)):
 
 security = HTTPBearer()
 
-# 🚫 로그아웃된 토큰인지 검사하고, 정상이면 user_id 반환
+# 🚫 블랙리스트 체크 없이 토큰 검증
 async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
     token = credentials.credentials
 
-    if await is_token_blacklisted(token):
-        raise HTTPException(status_code=401, detail="로그아웃된 토큰입니다.")
+    # 블랙리스트 체크 제거
+    # if await is_token_blacklisted(token):
+    #     raise HTTPException(status_code=401, detail="로그아웃된 토큰입니다.")
 
-    user_id = verify_access_token(token)
+    user_id = verify_access_token(token)  # 여기서 토큰 유효성 검증
     return user_id
