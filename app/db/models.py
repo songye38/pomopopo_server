@@ -12,7 +12,7 @@ import uuid
 # User 모델 정의
 class User(Base):
     __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=True)
     name = Column(String)  # ✅ DB에 꼭 저장됨
