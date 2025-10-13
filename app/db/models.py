@@ -86,8 +86,11 @@ class PresetSession(Base):
 class UserPomodoroLog(Base):
     __tablename__ = "user_pomodoro_logs"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    pomodoro_id = Column(Integer, ForeignKey("pomodoros.id"))
+
+    # FK 컬럼도 모두 UUID로
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
+    pomodoro_id = Column(UUID(as_uuid=True), ForeignKey("pomodoros.id"))
+
     started_at = Column(DateTime, default=datetime.utcnow)
     finished_at = Column(DateTime, nullable=True)
     total_duration = Column(Integer, nullable=True)
