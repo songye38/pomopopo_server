@@ -4,7 +4,7 @@
 # FastAPI와 함께 사용되어 API 요청 및 응답의 데이터 구조를 정의합니다.
 
 import uuid
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import List, Optional
 
 # -----------------------------
@@ -21,6 +21,16 @@ class UserOut(BaseModel):
     name: str
 
     model_config = {"from_attributes": True}
+
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+class TokenOut(BaseModel):
+    access_token: str
+    token_type: str
+    user: UserOut
 
 # -----------------------------
 # SessionType 스키마
