@@ -3,6 +3,15 @@
 # FastAPI에서 인증 및 권한 부여를 구현할 때 사용됩니다.
 
 
+# create_access_token
+# create_refresh_token
+# verify_access_token
+
+
+# 토큰 생성, 리프레시 토큰, 액세스 토큰 확인 기능
+
+
+
 from dotenv import load_dotenv
 import os
 import jwt
@@ -21,13 +30,13 @@ REFRESH_TOKEN_EXPIRE_DAYS = 7
 # JWT 토큰 생성 함수
 def create_access_token(data: dict):
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = datetime() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 def create_refresh_token(data: dict):
-    expire = datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    expire = datetime() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
     to_encode = data.copy()
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, REFRESH_SECRET_KEY, algorithm=ALGORITHM)
