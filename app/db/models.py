@@ -37,7 +37,7 @@ class Pomodoro(Base):
     __tablename__ = "pomodoros"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title = Column(String, nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id"))  # 사용자 연결
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))  # UUID로 변경
     sessions = relationship("Session", back_populates="pomodoro")
 
     # ORM에서 User와 연결
@@ -103,7 +103,7 @@ class UserPomodoroLog(Base):
 class SessionLog(Base):
     __tablename__ = "session_logs"
     id = Column(Integer, primary_key=True, index=True)
-    log_id = Column(Integer, ForeignKey("user_pomodoro_logs.id"))
+    log_id = Column(UUID(as_uuid=True), ForeignKey("user_pomodoro_logs.id"))
     session_id = Column(Integer, ForeignKey("sessions.id"))
     goal = Column(String, nullable=False)
     duration = Column(Integer)

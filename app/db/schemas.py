@@ -26,7 +26,7 @@ class UserOut(BaseModel):
 # SessionType 스키마
 # -----------------------------
 class SessionTypeOut(BaseModel):
-    id: uuid.UUID
+    id: int
     name: str
     description: Optional[str] = None
 
@@ -42,7 +42,7 @@ class SessionCreate(BaseModel):
     order: int
 
 class SessionOut(BaseModel):
-    id: uuid.UUID
+    id: int
     type: SessionTypeOut
     goal: str
     duration: int
@@ -74,7 +74,7 @@ class PresetSessionCreate(BaseModel):
     order: int
 
 class PresetSessionOut(BaseModel):
-    id: uuid.UUID
+    id: int
     type: SessionTypeOut
     goal: str
     duration: int
@@ -91,7 +91,7 @@ class PresetPomodoroCreate(BaseModel):
     sessions: List[PresetSessionCreate]
 
 class PresetPomodoroOut(BaseModel):
-    id: uuid.UUID
+    id: int
     title: str
     description: Optional[str] = None
     sessions: List[PresetSessionOut]
