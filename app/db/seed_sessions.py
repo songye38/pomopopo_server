@@ -1,7 +1,7 @@
 from app.db.database import SessionLocal
 from app.db.models import PresetPomodoro, PresetSession, PresetPomodoroSession
 
-def seed_session():
+def seed_sessions():
     db = SessionLocal()
     try:
         preset = db.query(PresetPomodoro).filter_by(title="refine").first()
