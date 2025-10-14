@@ -1,5 +1,5 @@
-from database import SessionLocal
-from models import PresetSession
+from app.db.database import SessionLocal
+from app.db.models import PresetSession
 
 db = SessionLocal()
 
