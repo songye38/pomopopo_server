@@ -4,13 +4,13 @@ from app.db.models import PresetPomodoro, PresetSession, PresetPomodoroSession
 def seed_sessions():
     db = SessionLocal()
     try:
-        preset = db.query(PresetPomodoro).filter_by(title="refine").first()
+        preset = db.query(PresetPomodoro).filter_by(title="reverse").first()
         if not preset:
-            raise ValueError("❌ 'refine' 프리셋을 찾을 수 없습니다.")
+            raise ValueError("❌ 'reverse' 프리셋을 찾을 수 없습니다.")
 
         db.query(PresetPomodoroSession).filter_by(preset_id=preset.id).delete()
 
-        order_sequence = [1, 14, 3, 14, 5, 15]  # ← 세션 id 순서
+        order_sequence = [1,13,2,13,5,14]  # ← 세션 id 순서
 
         for order_index, session_id in enumerate(order_sequence, start=1):
             session = db.query(PresetSession).filter_by(id=session_id).first()
@@ -27,7 +27,7 @@ def seed_sessions():
             )
 
         db.commit()
-        print("✅ 'refine' 프리셋 세션 연결 완료!")
+        print("✅ 'reverse' 프리셋 세션 연결 완료!")
 
     except Exception as e:
         db.rollback()
