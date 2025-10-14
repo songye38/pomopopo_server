@@ -59,14 +59,16 @@ class Session(Base):
 
 
 
-# 프리셋과 세션을 연결하는 N:N 관계용 테이블
-preset_session_association = Table(
-    "preset_session_association",
-    Base.metadata,
-    Column("preset_id", ForeignKey("preset_pomodoros.id"), primary_key=True),
-    Column("session_id", ForeignKey("preset_sessions.id"), primary_key=True),
-    Column("order", Integer)  # 프리셋 내에서의 세션 순서
-)
+# 중간 테이블을 Association Object로 정의
+class PresetPomodoroSession(Base):
+    __tablename__ = "preset_pomodoro_sessions"
+    preset_id = Column(Integer, ForeignKey("preset_pomodoros.id"), primary_key=True)
+    session_id = Column(Integer, ForeignKey("preset_sessions.id"), primary_key=True)
+    order = Column(Integer)
+
+    # 양방향 연결
+    session = relationship("PresetSession")
+    preset = relationship("PresetPomodoro", back_populates="preset_sessions")
 
 
 # 프리셋 뽀모도로
@@ -74,13 +76,17 @@ class PresetPomodoro(Base):
     __tablename__ = "preset_pomodoros"
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, nullable=False)
-    description = Column(String, nullable=True)
 
-    sessions = relationship(
-        "PresetSession",
-        secondary=preset_session_association,
-        back_populates="presets"
+    preset_sessions = relationship(
+        "PresetPomodoroSession",
+        back_populates="preset",
+        order_by="PresetPomodoroSession.order"
     )
+
+    @property
+    def sessions(self):
+        # order 기준으로 세션 리스트 반환
+        return [ps.session for ps in self.preset_sessions]
 
 
 class PresetSession(Base):
@@ -92,9 +98,8 @@ class PresetSession(Base):
 
     session_type = relationship("SessionType")
     presets = relationship(
-        "PresetPomodoro",
-        secondary=preset_session_association,
-        back_populates="sessions"
+        "PresetPomodoroSession",
+        back_populates="session"
     )
 
 

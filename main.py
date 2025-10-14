@@ -11,7 +11,7 @@ app = FastAPI()
 
 Base.metadata.create_all(bind=engine)
 
-seed_sessions()
+#seed_sessions()
 
 app.add_middleware(
     CORSMiddleware,
