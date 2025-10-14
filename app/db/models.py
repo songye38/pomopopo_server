@@ -62,14 +62,13 @@ class Session(Base):
 # 중간 테이블을 Association Object로 정의
 class PresetPomodoroSession(Base):
     __tablename__ = "preset_pomodoro_sessions"
-    preset_id = Column(Integer, ForeignKey("preset_pomodoros.id"), primary_key=True)
-    session_id = Column(Integer, ForeignKey("preset_sessions.id"), primary_key=True)
+    id = Column(Integer, primary_key=True, index=True)  # 🔹 새로 추가
+    preset_id = Column(Integer, ForeignKey("preset_pomodoros.id"))
+    session_id = Column(Integer, ForeignKey("preset_sessions.id"))
     order = Column(Integer)
 
-    # 양방향 연결
-    session = relationship("PresetSession")
     preset = relationship("PresetPomodoro", back_populates="preset_sessions")
-
+    session = relationship("PresetSession")
 
 # 프리셋 뽀모도로
 class PresetPomodoro(Base):
