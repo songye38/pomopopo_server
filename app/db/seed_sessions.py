@@ -9,15 +9,15 @@ def seed_sessions():
     db = SessionLocal()
     presets = [
         PresetPomodoro(title="refine"),
-        PresetPomodoro(title="echo"),
         PresetPomodoro(title="reverse"),
-        PresetPomodoro(title="constraint"),
+        PresetPomodoro(title="random"),
         PresetPomodoro(title="emotion"),
-        PresetPomodoro(title="observe"),
-        PresetPomodoro(title="diverge"),
-        PresetPomodoro(title="tagging"),
-        PresetPomodoro(title="detox"),
-        PresetPomodoro(title="ruleBreaking")
+        PresetPomodoro(title="explore"),
+        PresetPomodoro(title="story"),
+        PresetPomodoro(title="echo"),
+        PresetPomodoro(title="escape"),
+        PresetPomodoro(title="repeat"),
+        PresetPomodoro(title="empty")
     ]
     db.add_all(presets)
     db.commit()
