@@ -5,7 +5,7 @@ db = SessionLocal()
 
 def seed_sessions():
     # 예: refine 프리셋의 연결 세션 삭제
-    db.query(PresetPomodoroSession).filter_by(preset_id=2).delete()
+    db.query(PresetPomodoroSession).filter_by(preset_id=3).delete()
     db.commit()
     db.close()
     # db = SessionLocal()
