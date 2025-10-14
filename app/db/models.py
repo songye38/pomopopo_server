@@ -1,7 +1,7 @@
 # sqlalchemy 모델 정의
 # 이 파일은 데이터베이스 테이블 구조를 정의합니다.
 
-from sqlalchemy import Column, Integer, String,ForeignKey,DateTime,Boolean,UUID
+from sqlalchemy import Table, Column, Integer, String,ForeignKey,DateTime,Boolean,UUID
 from sqlalchemy.orm import relationship
 from app.db.database import Base,engine
 import app.db.models as models
@@ -59,6 +59,15 @@ class Session(Base):
 
 
 
+# 프리셋과 세션을 연결하는 N:N 관계용 테이블
+preset_session_association = Table(
+    "preset_session_association",
+    Base.metadata,
+    Column("preset_id", ForeignKey("preset_pomodoros.id"), primary_key=True),
+    Column("session_id", ForeignKey("preset_sessions.id"), primary_key=True),
+    Column("order", Integer)  # 프리셋 내에서의 세션 순서
+)
+
 
 # 프리셋 뽀모도로
 class PresetPomodoro(Base):
@@ -66,21 +75,28 @@ class PresetPomodoro(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, nullable=False)
     description = Column(String, nullable=True)
-    sessions = relationship("PresetSession", back_populates="preset")
+
+    sessions = relationship(
+        "PresetSession",
+        secondary=preset_session_association,
+        back_populates="presets"
+    )
 
 
-#프리셋 뽀모도로에 사용될 세션
 class PresetSession(Base):
     __tablename__ = "preset_sessions"
     id = Column(Integer, primary_key=True, index=True)
-    preset_id = Column(Integer, ForeignKey("preset_pomodoros.id"))
     type_id = Column(Integer, ForeignKey("session_types.id"))
     goal = Column(String, nullable=False)
     duration = Column(Integer)
-    order = Column(Integer)
 
-    preset = relationship("PresetPomodoro", back_populates="sessions")
     session_type = relationship("SessionType")
+    presets = relationship(
+        "PresetPomodoro",
+        secondary=preset_session_association,
+        back_populates="sessions"
+    )
+
 
 
 class UserPomodoroLog(Base):

@@ -4,11 +4,14 @@ from sqlalchemy.orm import Session
 from app.db.database import engine
 from app.db.models import Base
 from app.routers import users
+from app.db.seed_sessions import seed_sessions
 
 
 app = FastAPI()
 
 Base.metadata.create_all(bind=engine)
+
+seed_sessions()
 
 app.add_middleware(
     CORSMiddleware,
