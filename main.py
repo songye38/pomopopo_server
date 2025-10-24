@@ -17,7 +17,7 @@ Base.metadata.create_all(bind=engine)
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
+app = FastAPI(root_path="", title="My API")
 
 # 허용할 origin 목록
 origins = [
