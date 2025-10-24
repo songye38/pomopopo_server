@@ -102,7 +102,6 @@ class PresetSession(Base):
     )
 
 
-
 class UserPomodoroLog(Base):
     __tablename__ = "user_pomodoro_logs"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)

@@ -1,53 +1,38 @@
 from app.db.database import SessionLocal
-from app.db.models import PresetPomodoro, PresetSession, PresetPomodoroSession
+from app.db.models import PresetPomodoro, PresetSession, PresetPomodoroSession,SessionType
 
 db = SessionLocal()
 
 def seed_sessions():
     db = SessionLocal()
 
-    # ⚡ 프리셋별 세션 순서 정의
-    preset_orders = {
-        "refine": [1,14,3,14,4,15],
-        "reverse": [2,14,3,14,6,15],
-        "random": [1,14,7,14,1,15],
-        "emotion": [1,14,8,14,1,15],
-        "explore": [1,14,9,14,1,15],
-        "story": [2,14,10,14,2,15],
-        "echo": [3,14,11,14,3,15],
-        "escape": [1,14,12,14,1,15],
-        "repeat": [1,14,2,14,13,15],
-        "empty": [1,14,3,14,1,15],
-    }
+    default_types = [
+            {"name": "diverge", "description": "발산"},
+            {"name": "converge", "description": "수렴"},
+            {"name": "observe", "description": "관찰"},
+            {"name": "screening", "description": "스크리닝"},
+            {"name": "refine", "description": "정밀 조율"},
+            {"name": "reverse", "description": "뒤집기 사고"},
+            {"name": "constraint", "description": "제약 도입"},
+            {"name": "emotion", "description": "감정 기록"},
+            {"name": "tagging", "description": "아이디어 태깅"},
+            {"name": "structuring", "description": "구조화"},
+            {"name": "analysis", "description": "반응 분석"},
+            {"name": "ruleBreaking", "description": "규칙 탈착"},
+            {"name": "transformation", "description": "변형"},
+            {"name": "break", "description": "단기휴식"},
+            {"name": "transfodetoxrmation", "description": "장기휴식"},
+        ]
+
 
     try:
-        for preset_name, order_sequence in preset_orders.items():
-            # 1️⃣ 프리셋 가져오기
-            preset = db.query(PresetPomodoro).filter_by(title=preset_name).first()
-            if not preset:
-                print(f"❌ '{preset_name}' 프리셋을 찾을 수 없습니다. 건너뜁니다.")
-                continue
-
-            # 2️⃣ 기존 연결 삭제
-            db.query(PresetPomodoroSession).filter_by(preset_id=preset.id).delete()
-
-            # 3️⃣ 새로운 연결 생성
-            for order_index, session_id in enumerate(order_sequence, start=1):
-                session = db.query(PresetSession).filter_by(id=session_id).first()
-                if not session:
-                    print(f"⚠️ 세션 id {session_id}을(를) 찾을 수 없어 건너뜁니다.")
-                    continue
-
-                db.add(
-                    PresetPomodoroSession(
-                        preset_id=preset.id,
-                        session_id=session.id,
-                        order=order_index
-                    )
-                )
-
-        db.commit()
-        print("✅ 모든 프리셋 세션 연결 완료!")
+        for t in default_types:
+            # 중복 체크
+            existing = db.query(SessionType).filter_by(name=t["name"]).first()
+            if not existing:
+                db.add(SessionType(name=t["name"], description=t["description"]))
+            db.commit()
+            print("✅ 모든 프리셋 세션 연결 완료!")
 
     except Exception as e:
         db.rollback()
