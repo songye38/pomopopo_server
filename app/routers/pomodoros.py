@@ -1,9 +1,7 @@
 # Pomodoro 생성 / 조회 / 수정 / 삭제
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from uuid import UUID
-from app.db import models
 from app.db.database import get_db
 from app.db.schemas import PomodoroCreate, PomodoroOut
 
