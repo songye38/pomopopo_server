@@ -51,6 +51,8 @@ class SessionCreate(BaseModel):
     duration: int
     order: int
 
+
+
 class SessionOut(BaseModel):
     id: int
     type: SessionTypeOut
@@ -59,6 +61,8 @@ class SessionOut(BaseModel):
     order: int
 
     model_config = {"from_attributes": True}
+
+
 
 # -----------------------------
 # Pomodoro 스키마
@@ -73,6 +77,7 @@ class PomodoroOut(BaseModel):
     sessions: List[SessionOut]
 
     model_config = {"from_attributes": True}
+
 
 # -----------------------------
 # PresetSession 스키마

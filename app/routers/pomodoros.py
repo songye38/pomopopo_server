@@ -5,79 +5,40 @@ from sqlalchemy.orm import Session
 from uuid import UUID
 from app.db import models
 from app.db.database import get_db
+from app.db.schemas import PomodoroCreate, PomodoroOut
 
 router = APIRouter(prefix="/pomodoros", tags=["pomodoros"])
+from app.auth.dependencies import get_current_user
+from app.db.models import User, Pomodoro, Session
+
 
 # --------------------------
 # Pomodoro 생성
 # --------------------------
-@router.post("/")
-def create_pomodoro(pomodoro_data: dict, db: Session = Depends(get_db)):
-    """
-    pomodoro_data 예시:
-    {
-        "title": "집중 공부",
-        "user_id": "uuid-string"
-    }
-    """
-    # user 존재 여부 확인
-    user = db.query(models.User).filter(models.User.id == pomodoro_data["user_id"]).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    pomodoro = models.Pomodoro(**pomodoro_data)
+@router.post("/pomodoros", response_model=PomodoroOut)
+async def create_pomodoro(
+    data: PomodoroCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    # 1️⃣ Pomodoro 생성
+    pomodoro = Pomodoro(title=data.title, user_id=current_user.id)
     db.add(pomodoro)
     db.commit()
     db.refresh(pomodoro)
-    return pomodoro
 
+    # 2️⃣ Session들 생성
+    for s in data.sessions:
+        session = Session(
+            pomodoro_id=pomodoro.id,
+            type_id=s.type_id,
+            goal=s.goal,
+            duration=s.duration,
+            order=s.order,
+        )
+        db.add(session)
 
-# --------------------------
-# 특정 Pomodoro 조회
-# --------------------------
-@router.get("/{pomodoro_id}")
-def get_pomodoro(pomodoro_id: UUID, db: Session = Depends(get_db)):
-    pomodoro = db.query(models.Pomodoro).filter(models.Pomodoro.id == pomodoro_id).first()
-    if not pomodoro:
-        raise HTTPException(status_code=404, detail="Pomodoro not found")
-    return pomodoro
-
-
-# --------------------------
-# 사용자의 모든 Pomodoro 조회
-# --------------------------
-@router.get("/user/{user_id}")
-def get_user_pomodoros(user_id: UUID, db: Session = Depends(get_db)):
-    pomodoros = db.query(models.Pomodoro).filter(models.Pomodoro.user_id == user_id).all()
-    return pomodoros
-
-
-# --------------------------
-# Pomodoro 수정
-# --------------------------
-@router.put("/{pomodoro_id}")
-def update_pomodoro(pomodoro_id: UUID, update_data: dict, db: Session = Depends(get_db)):
-    pomodoro = db.query(models.Pomodoro).filter(models.Pomodoro.id == pomodoro_id).first()
-    if not pomodoro:
-        raise HTTPException(status_code=404, detail="Pomodoro not found")
-    
-    for key, value in update_data.items():
-        setattr(pomodoro, key, value)
-    
     db.commit()
     db.refresh(pomodoro)
+
     return pomodoro
-
-
-# --------------------------
-# Pomodoro 삭제
-# --------------------------
-@router.delete("/{pomodoro_id}")
-def delete_pomodoro(pomodoro_id: UUID, db: Session = Depends(get_db)):
-    pomodoro = db.query(models.Pomodoro).filter(models.Pomodoro.id == pomodoro_id).first()
-    if not pomodoro:
-        raise HTTPException(status_code=404, detail="Pomodoro not found")
-    
-    db.delete(pomodoro)
-    db.commit()
-    return {"detail": "Pomodoro deleted"}
