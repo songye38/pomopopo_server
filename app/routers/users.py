@@ -43,10 +43,10 @@ async def login(user: UserLogin, response: Response, db: Session = Depends(get_d
         key="refresh_token",
         value=refresh_token,
         httponly=True,
-        secure=False,
-        samesite="lax",
+        secure=True,
+        samesite="none",
         max_age=REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
-        #domain="pomopopo-git-feature-auth-songyes-projects-cb766be0.vercel.app/"
+        domain="pomopopo.com"
     )
 
     response.set_cookie(
@@ -54,9 +54,9 @@ async def login(user: UserLogin, response: Response, db: Session = Depends(get_d
         value=access_token,
         httponly=True,  # 보안상 httponly 권장
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,  # access token은 보통 짧게 (예: 15~30분)
-        secure=False,
-        samesite="lax",
-        #domain="pomopopo-git-feature-auth-songyes-projects-cb766be0.vercel.app"
+        secure=True,
+        samesite="none",
+        domain="pomopopo.com"
     )
 
     return db_user  # UserOut로 직렬화됨
@@ -84,10 +84,10 @@ def refresh_token(request: Request, response: Response, db: Session = Depends(ge
         key="access_token",
         value=new_access_token,
         httponly=True,
-        secure=False,
-        samesite="lax",
+        secure=True,
+        samesite="none",
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-        #domain="pomopopo-git-feature-auth-songyes-projects-cb766be0.vercel.app"
+        domain="pomopopo.com"
     )
 
     # 클라이언트에서는 JSON 응답을 굳이 안 써도 되지만, user 정보 정도는 내려줄 수 있음
@@ -100,7 +100,7 @@ def refresh_token(request: Request, response: Response, db: Session = Depends(ge
 def logout(response: Response):
     cookie_params = {
         "path": "/",
-        "domain": "pomopopo-git-feature-auth-songyes-projects-cb766be0.vercel.app/",
+        "domain": "pomopopo.com",
         "secure": True,
         "samesite": "none",
     }
