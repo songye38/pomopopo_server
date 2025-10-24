@@ -30,10 +30,8 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
     return new_user
 
 
-from fastapi.responses import JSONResponse
-
 @router.post("/login", response_model=UserOut)
-async def login(user: UserLogin, db: Session = Depends(get_db)):
+async def login(user: UserLogin, response: Response, db: Session = Depends(get_db)):
     db_user = get_user_by_email(db, user.email)
     if not db_user or not verify_password(user.password, db_user.hashed_password):
         raise HTTPException(status_code=400, detail="이메일 또는 비밀번호가 틀렸습니다.")
@@ -41,9 +39,6 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
     access_token = create_access_token(data={"sub": str(db_user.id)})
     refresh_token = create_refresh_token(data={"sub": str(db_user.id)})
 
-    response = JSONResponse(content=UserOut.from_orm(db_user).dict())
-
-    # 쿠키 설정
     response.set_cookie(
         key="refresh_token",
         value=refresh_token,
@@ -51,20 +46,20 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
         secure=True,
         samesite="none",
         max_age=REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
-        # domain="pomopopo-git-feature-auth-songyes-projects-cb766be0.vercel.app"
+        #domain="pomopopo-git-feature-auth-songyes-projects-cb766be0.vercel.app/"
     )
+
     response.set_cookie(
         key="access_token",
         value=access_token,
-        httponly=True,
+        httponly=True,  # 보안상 httponly 권장
+        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,  # access token은 보통 짧게 (예: 15~30분)
         secure=True,
         samesite="none",
-        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-        # domain="pomopopo-git-feature-auth-songyes-projects-cb766be0.vercel.app"
+        #domain="pomopopo-git-feature-auth-songyes-projects-cb766be0.vercel.app"
     )
 
-    return response
-
+    return db_user  # UserOut로 직렬화됨
 
 
 @router.post("/refresh")
@@ -92,7 +87,7 @@ def refresh_token(request: Request, response: Response, db: Session = Depends(ge
         secure=True,
         samesite="none",
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-        # domain="pomopopo-git-feature-auth-songyes-projects-cb766be0.vercel.app"
+        #domain="pomopopo-git-feature-auth-songyes-projects-cb766be0.vercel.app"
     )
 
     # 클라이언트에서는 JSON 응답을 굳이 안 써도 되지만, user 정보 정도는 내려줄 수 있음
@@ -105,7 +100,7 @@ def refresh_token(request: Request, response: Response, db: Session = Depends(ge
 def logout(response: Response):
     cookie_params = {
         "path": "/",
-        "domain": "pomopopo-git-feature-auth-songyes-projects-cb766be0.vercel.app",
+        "domain": "pomopopo-git-feature-auth-songyes-projects-cb766be0.vercel.app/",
         "secure": True,
         "samesite": "none",
     }
