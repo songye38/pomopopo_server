@@ -11,11 +11,12 @@ app = FastAPI()
 
 Base.metadata.create_all(bind=engine)
 
-seed_sessions()
+# seed_sessions()
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173","https://pomopopo.com",'https://pomopopo-git-feature-auth-songyes-projects-cb766be0.vercel.app'],
+
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

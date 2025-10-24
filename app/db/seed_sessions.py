@@ -21,7 +21,7 @@ def seed_sessions():
             {"name": "ruleBreaking", "description": "규칙 탈착"},
             {"name": "transformation", "description": "변형"},
             {"name": "break", "description": "단기휴식"},
-            {"name": "transfodetoxrmation", "description": "장기휴식"},
+            {"name": "detox", "description": "장기휴식"},
         ]
 
 
