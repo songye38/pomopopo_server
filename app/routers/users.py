@@ -43,8 +43,8 @@ async def login(user: UserLogin, response: Response, db: Session = Depends(get_d
         key="refresh_token",
         value=refresh_token,
         httponly=True,
-        secure=True,
-        samesite="none",
+        secure=False,
+        samesite="lax",
         max_age=REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
         #domain="pomopopo-git-feature-auth-songyes-projects-cb766be0.vercel.app/"
     )
@@ -54,8 +54,8 @@ async def login(user: UserLogin, response: Response, db: Session = Depends(get_d
         value=access_token,
         httponly=True,  # 보안상 httponly 권장
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,  # access token은 보통 짧게 (예: 15~30분)
-        secure=True,
-        samesite="none",
+        secure=False,
+        samesite="lax",
         #domain="pomopopo-git-feature-auth-songyes-projects-cb766be0.vercel.app"
     )
 
@@ -84,8 +84,8 @@ def refresh_token(request: Request, response: Response, db: Session = Depends(ge
         key="access_token",
         value=new_access_token,
         httponly=True,
-        secure=True,
-        samesite="none",
+        secure=False,
+        samesite="lax",
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         #domain="pomopopo-git-feature-auth-songyes-projects-cb766be0.vercel.app"
     )
