@@ -13,7 +13,7 @@ from app.db.models import User, Pomodoro, Session
 # --------------------------
 # Pomodoro 생성
 # --------------------------
-@router.post("/", response_model=PomodoroOut)
+@router.post("/add", response_model=PomodoroOut)
 async def create_pomodoro(
     data: PomodoroCreate,
     db: Session = Depends(get_db),
