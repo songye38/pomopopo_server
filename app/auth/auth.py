@@ -14,7 +14,7 @@
 
 from dotenv import load_dotenv
 import os
-from jose import jwt
+from jose import jwt, JWTError
 from datetime import datetime, timedelta
 from fastapi import HTTPException, status
 

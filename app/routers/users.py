@@ -6,7 +6,7 @@ from app.db.crud import create_user, get_user_by_email, verify_password
 from app.auth.auth import create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES,create_refresh_token,REFRESH_TOKEN_EXPIRE_DAYS
 from app.auth.dependencies import verify_token, get_current_user
 from app.db.database import get_db
-import jwt
+from jose import jwt, JWTError
 from datetime import timedelta
 from dotenv import load_dotenv
 import os

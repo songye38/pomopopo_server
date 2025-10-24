@@ -1,6 +1,6 @@
 import os
 from fastapi import Depends
-import jwt
+from jose import jwt, JWTError
 from app.auth.auth import verify_access_token
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials,OAuth2PasswordBearer
