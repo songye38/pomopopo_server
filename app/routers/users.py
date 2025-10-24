@@ -51,7 +51,7 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
         secure=True,
         samesite="none",
         max_age=REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
-        domain="pomopopo-git-feature-auth-songyes-projects-cb766be0.vercel.app"
+        # domain="pomopopo-git-feature-auth-songyes-projects-cb766be0.vercel.app"
     )
     response.set_cookie(
         key="access_token",
@@ -60,7 +60,7 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
         secure=True,
         samesite="none",
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-        domain="pomopopo-git-feature-auth-songyes-projects-cb766be0.vercel.app"
+        # domain="pomopopo-git-feature-auth-songyes-projects-cb766be0.vercel.app"
     )
 
     return response
@@ -92,7 +92,7 @@ def refresh_token(request: Request, response: Response, db: Session = Depends(ge
         secure=True,
         samesite="none",
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-        domain="pomopopo-git-feature-auth-songyes-projects-cb766be0.vercel.app"
+        # domain="pomopopo-git-feature-auth-songyes-projects-cb766be0.vercel.app"
     )
 
     # 클라이언트에서는 JSON 응답을 굳이 안 써도 되지만, user 정보 정도는 내려줄 수 있음
