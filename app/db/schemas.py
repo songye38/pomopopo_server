@@ -72,11 +72,12 @@ class PomodoroCreate(BaseModel):
     sessions: List[SessionCreate]
 
 class PomodoroOut(BaseModel):
-    id: uuid.UUID
+    id: str
     title: str
-    sessions: List[SessionOut]
-
-    model_config = {"from_attributes": True}
+    sessions: List[SessionOut] = []
+    
+    class Config:
+        orm_mode = True  # ORM 객체를 바로 Pydantic 모델로 변환 가능
 
 
 # -----------------------------

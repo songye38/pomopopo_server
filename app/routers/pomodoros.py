@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.db.schemas import PomodoroCreate, PomodoroOut
+from typing import List
 
 router = APIRouter(prefix="/pomodoros", tags=["pomodoros"])
 from app.auth.dependencies import get_current_user
@@ -40,3 +41,19 @@ async def create_pomodoro(
     db.refresh(pomodoro)
 
     return pomodoro
+
+
+# --------------------------
+# 특정 사용자 뽀모도로 조회
+# --------------------------
+@router.get("/", response_model=List[PomodoroOut])
+async def get_user_pomodoros(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    pomodoros = (
+        db.query(Pomodoro)
+        .filter(Pomodoro.user_id == current_user.id)
+        .all()
+    )
+    return pomodoros
