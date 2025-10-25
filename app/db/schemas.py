@@ -71,7 +71,7 @@ class PomodoroCreate(BaseModel):
     sessions: List[SessionCreate]
 
 class PomodoroOut(BaseModel):
-    id: str
+    id: uuid.UUID
     title: str
     sessions: List[SessionOut] = []
     
