@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.db.schemas import PomodoroCreate, PomodoroOut
 from typing import List
+from fastapi import Path
 
 router = APIRouter(prefix="/pomodoros", tags=["pomodoros"])
 from app.auth.dependencies import get_current_user
@@ -57,3 +58,24 @@ async def get_user_pomodoros(
         .all()
     )
     return pomodoros
+
+
+
+# --------------------------
+# 특정 뽀모도로 조회
+# --------------------------
+@router.get("/{pomodoro_id}", response_model=PomodoroOut)
+async def get_pomodoro_by_id(
+    pomodoro_id: str = Path(..., description="조회할 뽀모도로 ID"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    pomodoro = (
+        db.query(Pomodoro)
+        .filter(Pomodoro.user_id == current_user.id, Pomodoro.id == pomodoro_id)
+        .first()
+    )
+    if not pomodoro:
+        raise HTTPException(status_code=404, detail="뽀모도로를 찾을 수 없습니다")
+    
+    return pomodoro
