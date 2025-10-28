@@ -37,6 +37,7 @@ async def create_pomodoro(
             goal=s.goal,
             duration=s.duration,
             order=s.order,
+            name = s.name,
         )
         db.add(session)
 
