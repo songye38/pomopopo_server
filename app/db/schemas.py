@@ -64,6 +64,16 @@ class SessionOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
+# 세션 업데이트용
+class SessionUpdate(BaseModel):
+    id: Optional[uuid.UUID]  # 기존 세션이면 id, 새로 추가되는 세션이면 None
+    type_id: int
+    goal: str
+    duration: int
+    order: int
+    name: str
+
+
 
 # -----------------------------
 # Pomodoro 스키마
@@ -79,6 +89,14 @@ class PomodoroOut(BaseModel):
     
     class Config:
         orm_mode = True  # ORM 객체를 바로 Pydantic 모델로 변환 가능
+
+# 뽀모도로 업데이트용
+class PomodoroUpdate(BaseModel):
+    title: Optional[str] = None
+    sessions: Optional[List[SessionUpdate]] = []
+
+    class Config:
+        orm_mode = True
 
 
 # -----------------------------

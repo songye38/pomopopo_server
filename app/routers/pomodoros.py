@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.db.database import get_db
-from app.db.schemas import PomodoroCreate, PomodoroOut
+from app.db.schemas import PomodoroCreate, PomodoroOut,PomodoroUpdate
 from typing import List
 from fastapi import Path
 from fastapi import HTTPException
@@ -89,6 +89,71 @@ async def get_pomodoro_by_id(
     
     return pomodoro
 
+
+# --------------------------
+# 특정 뽀모도로 수정
+# --------------------------
+
+@router.put("/{pomodoro_id}", response_model=PomodoroOut)
+async def update_pomodoro(
+    pomodoro_id: str = Path(..., description="수정할 뽀모도로 ID"),
+    data: PomodoroUpdate = None,  # title + sessions
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if data is None:
+        raise HTTPException(status_code=400, detail="수정할 데이터가 필요합니다")
+
+    try:
+        pomodoro_uuid = UUID(pomodoro_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="유효하지 않은 UUID입니다")
+
+    pomodoro = (
+        db.query(Pomodoro)
+        .filter(Pomodoro.user_id == current_user.id, Pomodoro.id == pomodoro_uuid)
+        .first()
+    )
+    if not pomodoro:
+        raise HTTPException(status_code=404, detail="뽀모도로를 찾을 수 없습니다")
+
+    # 1️⃣ 뽀모도로 기본 정보 수정
+    if data.title is not None:
+        pomodoro.title = data.title
+
+    # 2️⃣ 세션 수정
+    sessions_to_update = data.sessions or []  # None이면 빈 리스트 처리
+    existing_sessions = {s.id: s for s in pomodoro.sessions}  # DB에 있는 세션
+    new_session_ids = []
+
+    for s in sessions_to_update:
+        if s.id and s.id in existing_sessions:  # 기존 세션 업데이트
+            session = existing_sessions[s.id]
+            session.type_id = s.type_id
+            session.goal = s.goal
+            session.duration = s.duration
+            session.order = s.order
+            session.name = s.name
+        else:  # 새로운 세션 추가
+            session = PomodoroSession(
+                pomodoro_id=pomodoro.id,
+                type_id=s.type_id,
+                goal=s.goal,
+                duration=s.duration,
+                order=s.order,
+                name=s.name,
+            )
+            db.add(session)
+        new_session_ids.append(session.id if s.id else None)
+
+    # 3️⃣ DB에는 없는 세션 삭제
+    for s in pomodoro.sessions:
+        if s.id not in new_session_ids:
+            db.delete(s)
+
+    db.commit()
+    db.refresh(pomodoro)
+    return pomodoro
 
 
 # --------------------------
