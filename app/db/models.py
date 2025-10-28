@@ -53,7 +53,7 @@ class Session(Base):
     goal = Column(String, nullable=False)
     duration = Column(Integer)
     order = Column(Integer)
-    title = Column(String, nullable=True)
+    name = Column(String, nullable=True)
 
     pomodoro = relationship("Pomodoro", back_populates="sessions")
     session_type = relationship("SessionType", back_populates="sessions")
@@ -95,7 +95,7 @@ class PresetSession(Base):
     type_id = Column(Integer, ForeignKey("session_types.id"))
     goal = Column(String, nullable=False)
     duration = Column(Integer)
-    title = Column(String, nullable=True)
+    name = Column(String, nullable=True)
 
     session_type = relationship("SessionType")
     presets = relationship(
