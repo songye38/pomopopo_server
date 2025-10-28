@@ -50,6 +50,7 @@ class SessionCreate(BaseModel):
     goal: str
     duration: int
     order: int
+    title : str #새로 추가
 
 
 
@@ -58,6 +59,7 @@ class SessionOut(BaseModel):
     goal: str
     duration: int
     order: int
+    title : str #새로 추가
 
     model_config = {"from_attributes": True}
 
@@ -87,6 +89,7 @@ class PresetSessionCreate(BaseModel):
     goal: str
     duration: int
     order: int
+    title :str #새로 추가
 
 class PresetSessionOut(BaseModel):
     id: int
@@ -94,6 +97,7 @@ class PresetSessionOut(BaseModel):
     goal: str
     duration: int
     order: int
+    title : str #새로 추가
 
     model_config = {"from_attributes": True}
 
