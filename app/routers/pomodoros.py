@@ -135,7 +135,7 @@ async def update_pomodoro(
             session.order = s.order
             session.name = s.name
         else:  # 새로운 세션 추가
-            session = PomodoroSession(
+            session = Session(
                 pomodoro_id=pomodoro.id,
                 type_id=s.type_id,
                 goal=s.goal,
