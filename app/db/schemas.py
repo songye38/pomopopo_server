@@ -55,7 +55,7 @@ class SessionCreate(BaseModel):
 
 
 class SessionOut(BaseModel):
-    type: Optional[int] = None  # 없으면 None으로 처리
+    type_id: int
     goal: str
     duration: int
     order: int
