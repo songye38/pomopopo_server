@@ -9,7 +9,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from app.db.database import Base  # 네 Base 위치
-from app.db.models import models  # 모델 import (자동 인식 위해)
+import app.db.models  # 모델 import (자동 인식 위해)
 
 # Alembic Config
 config = context.config

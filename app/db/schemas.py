@@ -32,15 +32,6 @@ class TokenOut(BaseModel):
     token_type: str
     user: UserOut
 
-# -----------------------------
-# SessionType 스키마
-# -----------------------------
-class SessionTypeOut(BaseModel):
-    id: int
-    name: str
-    description: Optional[str] = None
-
-    model_config = {"from_attributes": True}
 
 # -----------------------------
 # Session 스키마
@@ -98,39 +89,3 @@ class PomodoroUpdate(BaseModel):
     class Config:
         orm_mode = True
 
-
-# -----------------------------
-# PresetSession 스키마
-# -----------------------------
-class PresetSessionCreate(BaseModel):
-    type_id: int
-    goal: str
-    duration: int
-    order: int
-    name :str #새로 추가
-
-class PresetSessionOut(BaseModel):
-    id: int
-    type: SessionTypeOut
-    goal: str
-    duration: int
-    order: int
-    name : str #새로 추가
-
-    model_config = {"from_attributes": True}
-
-# -----------------------------
-# PresetPomodoro 스키마
-# -----------------------------
-class PresetPomodoroCreate(BaseModel):
-    title: str
-    description: Optional[str] = None
-    sessions: List[PresetSessionCreate]
-
-class PresetPomodoroOut(BaseModel):
-    id: int
-    title: str
-    description: Optional[str] = None
-    sessions: List[PresetSessionOut]
-
-    model_config = {"from_attributes": True}
