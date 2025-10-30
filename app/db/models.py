@@ -18,6 +18,7 @@ class User(Base):
 
     # User가 만든 Pomodoro 리스트
     pomodoros = relationship("Pomodoro", back_populates="user")
+    pomodoro_logs = relationship("UserPomodoroLog", back_populates="user")
 
 
 
