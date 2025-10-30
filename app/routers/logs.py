@@ -59,7 +59,10 @@ def add_session_log(
         duration=duration,
         order=order,
         started_at=datetime.utcnow(),
-        completed=False
+        completed=False,
+        pause_count=0,              # 초기값
+        total_paused_duration=0     # 초기값
+        
     )
     db.add(s_log)
     db.commit()
@@ -73,14 +76,19 @@ def add_session_log(
 @router.patch("/session/finish")
 def finish_session_log(
     session_log_id: int,
+    total_paused_duration: int = 0,  # 프론트에서 계산해서 전달
+    pause_count: int = 0,            # 프론트에서 계산해서 전달
     db: Session = Depends(get_db)
 ):
-    """세션 로그 완료 처리"""
     s_log = db.query(SessionLog).get(session_log_id)
     if not s_log:
         raise HTTPException(status_code=404, detail="Session log not found")
+    
     s_log.finished_at = datetime.utcnow()
     s_log.completed = True
+    s_log.total_paused_duration = total_paused_duration
+    s_log.pause_count = pause_count
+    
     db.commit()
     return {"session_log_id": s_log.id, "completed": True}
 

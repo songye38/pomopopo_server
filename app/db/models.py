@@ -164,6 +164,9 @@ class SessionLog(Base):
     started_at = Column(DateTime, nullable=True)
     finished_at = Column(DateTime, nullable=True)
 
+    pause_count = Column(Integer, default=0)          # 몇 번 일시정지 했는지
+    total_paused_duration = Column(Integer, default=0) # 총 일시정지 시간(초)
+
     log = relationship("UserPomodoroLog", back_populates="sessions")
     session = relationship("Session", back_populates="session_logs")
     preset_session = relationship("PresetSession", back_populates="session_logs")
