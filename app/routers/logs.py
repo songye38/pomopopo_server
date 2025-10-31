@@ -7,6 +7,7 @@ from sqlalchemy import func
 from app.db.database import get_db
 from app.auth.dependencies import get_current_user
 from app.db.models import User, UserPomodoroLog, SessionLog, Session
+from app.db.schemas import StartPomodoroRequest
 
 router = APIRouter(prefix="/logs", tags=["logs"])
 
@@ -17,14 +18,13 @@ from fastapi import Body
 
 @router.post("/pomodoro/start")
 def start_pomodoro(
-    pomodoro_id: UUID = Body(...),  # 여기서 Body로 명시
+    request: StartPomodoroRequest,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """새로운 뽀모도로 로그 생성 및 id 반환"""
     log = UserPomodoroLog(
         user_id=current_user.id,
-        pomodoro_id=pomodoro_id,
+        pomodoro_id=request.pomodoro_id,
         started_at=datetime.utcnow(),
         completed=False
     )

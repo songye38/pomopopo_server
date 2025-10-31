@@ -13,7 +13,7 @@ app = FastAPI()
 
 Base.metadata.create_all(bind=engine)
 
-seed_pomodoros()
+#seed_pomodoros()
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware

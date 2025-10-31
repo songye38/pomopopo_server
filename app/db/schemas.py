@@ -90,3 +90,7 @@ class PomodoroUpdate(BaseModel):
     class Config:
         orm_mode = True
 
+
+
+class StartPomodoroRequest(BaseModel):
+    pomodoro_id: uuid.UUID
