@@ -1,5 +1,5 @@
 from app.db.database import SessionLocal
-from app.db.models import PresetPomodoro, PresetSession, PresetPomodoroSession,SessionType
+from app.db.models import SessionType
 
 db = SessionLocal()
 
