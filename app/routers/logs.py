@@ -16,7 +16,6 @@ router = APIRouter(prefix="/logs", tags=["logs"])
 @router.post("/pomodoro/start")
 def start_pomodoro(
     pomodoro_id: UUID = None,
-    preset_id: int = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -24,7 +23,6 @@ def start_pomodoro(
     log = UserPomodoroLog(
         user_id=current_user.id,
         pomodoro_id=pomodoro_id,
-        preset_pomodoro_id=preset_id,
         started_at=datetime.utcnow(),
         completed=False
     )
@@ -41,20 +39,18 @@ def start_pomodoro(
 def add_session_log(
     log_id: UUID,
     session_id: int = None,
-    preset_session_id: int = None,
     goal: str = None,
     duration: int = None,
     order: int = None,
     db: Session = Depends(get_db)
 ):
     """세션 로그 기록"""
-    if not (session_id or preset_session_id):
+    if not (session_id):
         raise HTTPException(status_code=400, detail="session_id 또는 preset_session_id 중 하나는 필수입니다.")
 
     s_log = SessionLog(
         log_id=log_id,
         session_id=session_id,
-        preset_session_id=preset_session_id,
         goal=goal or "",
         duration=duration,
         order=order,

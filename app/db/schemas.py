@@ -46,6 +46,7 @@ class SessionCreate(BaseModel):
 
 
 class SessionOut(BaseModel):
+    id : int
     type_id: int
     goal: str
     duration: int
