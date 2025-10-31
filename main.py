@@ -6,14 +6,14 @@ from app.db.models import Base
 from app.routers.users import router as users_router
 from app.routers.pomodoros import router as pomodoros_router
 from app.routers.logs import router as logs_router
-from app.db.seed_sessions import seed_sessions
+from app.db.seed_pomodoros import seed_pomodoros
 
 
 app = FastAPI()
 
 Base.metadata.create_all(bind=engine)
 
-# seed_sessions()
+seed_pomodoros()
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
