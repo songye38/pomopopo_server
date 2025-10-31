@@ -69,6 +69,7 @@ class Session(Base):
     name = Column(String, nullable=True)
 
     # 관계
+    session_type = relationship("SessionType", back_populates="sessions")
     pomodoro = relationship("Pomodoro", back_populates="sessions")
     session_logs = relationship("SessionLog", back_populates="session")
 
