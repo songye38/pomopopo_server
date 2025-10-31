@@ -82,7 +82,7 @@ class UserPomodoroLog(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
-    pomodoro_id = Column(UUID(as_uuid=True), ForeignKey("pomodoros.id"))
+    pomodoro_id = Column(UUID(as_uuid=True), ForeignKey("pomodoros.id"),nullable=False)
 
     started_at = Column(DateTime, default=datetime.utcnow)
     finished_at = Column(DateTime, nullable=True)
@@ -106,7 +106,7 @@ class SessionLog(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     log_id = Column(UUID(as_uuid=True), ForeignKey("user_pomodoro_logs.id"), nullable=False)
-    session_id = Column(Integer, ForeignKey("sessions.id"), nullable=True)
+    session_id = Column(Integer, ForeignKey("sessions.id"), nullable=False)
 
     goal = Column(String, nullable=False)
     duration = Column(Integer)
