@@ -13,9 +13,11 @@ router = APIRouter(prefix="/logs", tags=["logs"])
 # --------------------------
 # 1️⃣ 뽀모도로 시작
 # --------------------------
+from fastapi import Body
+
 @router.post("/pomodoro/start")
 def start_pomodoro(
-    pomodoro_id: UUID = None,
+    pomodoro_id: UUID = Body(...),  # 여기서 Body로 명시
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -32,22 +34,22 @@ def start_pomodoro(
     return {"log_id": log.id, "success": True}
 
 
+
 # --------------------------
 # 2️⃣ 세션 로그 추가
 # --------------------------
+from fastapi import Body
+
 @router.post("/session/add")
 def add_session_log(
-    log_id: UUID,
-    session_id: int = None,
-    goal: str = None,
-    duration: int = None,
-    order: int = None,
+    log_id: UUID = Body(...),         # 필수
+    session_id: int = Body(...),      # 필수
+    goal: str = Body(None),           # optional
+    duration: int = Body(None),       # optional
+    order: int = Body(None),          # optional
     db: Session = Depends(get_db)
 ):
     """세션 로그 기록"""
-    if not (session_id):
-        raise HTTPException(status_code=400, detail="session_id 또는 preset_session_id 중 하나는 필수입니다.")
-
     s_log = SessionLog(
         log_id=log_id,
         session_id=session_id,
@@ -56,9 +58,8 @@ def add_session_log(
         order=order,
         started_at=datetime.utcnow(),
         completed=False,
-        pause_count=0,              # 초기값
-        total_paused_duration=0     # 초기값
-        
+        pause_count=0,
+        total_paused_duration=0
     )
     db.add(s_log)
     db.commit()
@@ -66,12 +67,13 @@ def add_session_log(
     return {"session_log_id": s_log.id, "success": True}
 
 
+
 # --------------------------
 # 3️⃣ 세션 로그 완료 처리
 # --------------------------
 @router.patch("/session/finish")
 def finish_session_log(
-    session_log_id: int,
+    session_log_id: int = Body(...),      # 필수
     total_paused_duration: int = 0,  # 프론트에서 계산해서 전달
     pause_count: int = 0,            # 프론트에서 계산해서 전달
     db: Session = Depends(get_db)
@@ -94,7 +96,7 @@ def finish_session_log(
 # --------------------------
 @router.post("/pomodoro/finish")
 def finish_pomodoro(
-    log_id: UUID,
+    log_id: UUID = Body(...),         # 필수
     db: Session = Depends(get_db)
 ):
     """뽀모도로 로그 완료 처리"""
