@@ -94,3 +94,9 @@ class PomodoroUpdate(BaseModel):
 
 class StartPomodoroRequest(BaseModel):
     pomodoro_id: uuid.UUID
+
+
+class FinishSessionRequest(BaseModel):
+    session_log_id: int
+    total_paused_duration: int
+    pause_count: int

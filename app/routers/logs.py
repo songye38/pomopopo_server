@@ -7,7 +7,7 @@ from sqlalchemy import func
 from app.db.database import get_db
 from app.auth.dependencies import get_current_user
 from app.db.models import User, UserPomodoroLog, SessionLog, Session
-from app.db.schemas import StartPomodoroRequest
+from app.db.schemas import StartPomodoroRequest,FinishSessionRequest
 
 router = APIRouter(prefix="/logs", tags=["logs"])
 
@@ -73,20 +73,18 @@ def add_session_log(
 # --------------------------
 @router.patch("/session/finish")
 def finish_session_log(
-    session_log_id: int = Body(...),      # 필수
-    total_paused_duration: int = 0,  # 프론트에서 계산해서 전달
-    pause_count: int = 0,            # 프론트에서 계산해서 전달
+    body: FinishSessionRequest,
     db: Session = Depends(get_db)
 ):
-    s_log = db.query(SessionLog).get(session_log_id)
+    s_log = db.query(SessionLog).get(body.session_log_id)
     if not s_log:
         raise HTTPException(status_code=404, detail="Session log not found")
     
     s_log.finished_at = datetime.utcnow()
     s_log.completed = True
-    s_log.total_paused_duration = total_paused_duration
-    s_log.pause_count = pause_count
-    
+    s_log.total_paused_duration = body.total_paused_duration
+    s_log.pause_count = body.pause_count
+
     db.commit()
     return {"session_log_id": s_log.id, "completed": True}
 
