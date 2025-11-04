@@ -54,6 +54,7 @@ class Pomodoro(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title = Column(String, nullable=False)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)  # 프리셋은 null 가능
+    is_deleted = Column(Boolean, default=False, nullable=False)  # 소프트 삭제
 
     # 관계
     user = relationship("User", back_populates="pomodoros")
