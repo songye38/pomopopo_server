@@ -133,22 +133,30 @@ def finish_pomodoro(
 
 
 @router.get("/pomodoro/{log_id}/summary")
-def get_pomodoro_summary(log_id: str, db: Session = Depends(get_db)):
-    log = db.query(UserPomodoroLog).filter(UserPomodoroLog.log_uuid == log_id).first()
+def get_pomodoro_summary(log_id: UUID, db: Session = Depends(get_db)):
+    """
+    회고용 요약 데이터를 반환
+    :param log_id: UserPomodoroLog.id (UUID)
+    """
+    # DB에서 PK 컬럼명이 id라면 id로 조회해야 함
+    log = db.query(UserPomodoroLog).filter(UserPomodoroLog.id == log_id).first()
     if not log:
         raise HTTPException(status_code=404, detail="Pomodoro log not found")
 
-    sessions = db.query(SessionLog).filter(SessionLog.pomodoro_log_id == log.id).all()
+    sessions = db.query(SessionLog).filter(SessionLog.log_id == log.id).all()
     total_sessions = len(sessions)
-    total_time = sum(s.effective_duration or 0 for s in sessions)
-    total_planned = sum(s.planned_duration or 1 for s in sessions)
+    total_time = sum((s.effective_duration or 0) for s in sessions)
+    total_planned = sum((s.planned_duration or 0) for s in sessions) or 1  # 0으로 나누는 것 방지
     focus_rate = int((total_time / total_planned) * 100)
 
     return {
         "total_sessions": total_sessions,
         "total_minutes": total_time // 60,
         "focus_rate": focus_rate,
+        "comment": log.comment,
+        "rating": log.rating,
     }
+
 
 
 @router.patch("/pomodoro/{log_id}/feedback")
