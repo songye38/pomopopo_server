@@ -48,7 +48,7 @@ async def create_pomodoro(
 
 
 # --------------------------
-# 특정 사용자 뽀모도로 조회
+# 특정 사용자 뽀모도로 조회 (삭제되지 않은 것만)
 # --------------------------
 @router.get("/", response_model=List[PomodoroOut])
 async def get_user_pomodoros(
@@ -57,7 +57,10 @@ async def get_user_pomodoros(
 ):
     pomodoros = (
         db.query(Pomodoro)
-        .filter(Pomodoro.user_id == current_user.id)
+        .filter(
+            Pomodoro.user_id == current_user.id,
+            Pomodoro.is_deleted == False  # ✅ 삭제되지 않은 뽀모도로만
+        )
         .all()
     )
     return pomodoros
