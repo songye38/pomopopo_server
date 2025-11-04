@@ -157,7 +157,7 @@ async def update_pomodoro(
 
 
 # --------------------------
-# 특정 뽀모도로 삭제
+# 특정 뽀모도로 삭제 (논리 삭제)
 # --------------------------
 @router.delete("/{pomodoro_id}", response_model=dict)
 async def delete_pomodoro(
@@ -173,11 +173,8 @@ async def delete_pomodoro(
     if not pomodoro:
         raise HTTPException(status_code=404, detail="삭제할 뽀모도로를 찾을 수 없습니다")
 
-    # 2️⃣ 연관된 세션 삭제
-    db.query(Session).filter(Session.pomodoro_id == pomodoro.id).delete()
-
-    # 3️⃣ 뽀모도로 삭제
-    db.delete(pomodoro)
+    # 2️⃣ 물리 삭제 X → is_deleted = True로 논리 삭제
+    pomodoro.is_deleted = True
     db.commit()
 
-    return {"message": "뽀모도로가 성공적으로 삭제되었습니다."}
+    return {"message": "뽀모도로가 성공적으로 삭제 표시되었습니다."}
