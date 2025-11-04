@@ -7,7 +7,7 @@ from uuid import UUID
 from app.db.database import get_db
 from app.auth.dependencies import get_current_user
 from app.db.models import User, UserPomodoroLog, SessionLog, Session, SessionStatus
-from app.db.schemas import StartPomodoroRequest, FinishSessionRequest
+from app.db.schemas import StartPomodoroRequest, FinishSessionRequest,FinishPomodoroRequest
 
 router = APIRouter(prefix="/logs", tags=["logs"])
 
@@ -100,23 +100,23 @@ def finish_session_log(
 # --------------------------
 @router.post("/pomodoro/finish")
 def finish_pomodoro(
-    log_id: UUID = Body(...),
+    body: FinishPomodoroRequest,  # ✅ JSON body { "log_id": "..." } 형식으로 받음
     db: Session = Depends(get_db),
 ):
     """전체 뽀모도로 종료 및 통계 반영"""
-    log = db.query(UserPomodoroLog).get(log_id)
+    log = db.query(UserPomodoroLog).get(body.log_id)
     if not log:
         raise HTTPException(status_code=404, detail="Pomodoro log not found")
 
-    # 세션 정보 반영
+    # ✅ 종료 시각 및 상태 업데이트
     log.finished_at = datetime.utcnow()
     log.status = SessionStatus.COMPLETED
     log.completed = True
 
-    # 총 집중 시간 계산 (effective_duration 기준)
+    # ✅ 총 집중 시간 계산 (effective_duration 기준)
     total_effective = (
         db.query(func.sum(SessionLog.effective_duration))
-        .filter(SessionLog.log_id == log_id)
+        .filter(SessionLog.log_id == body.log_id)
         .scalar()
         or 0
     )
@@ -125,10 +125,11 @@ def finish_pomodoro(
     db.commit()
 
     return {
-        "log_id": log.id,
+        "log_id": str(log.id),
         "completed": True,
         "total_effective_duration": log.total_effective_duration,
     }
+
 
 
 @router.get("/pomodoro/{log_id}/summary")

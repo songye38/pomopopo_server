@@ -100,3 +100,6 @@ class FinishSessionRequest(BaseModel):
     session_log_id: int
     total_paused_duration: int
     pause_count: int
+
+class FinishPomodoroRequest(BaseModel):
+    log_id: uuid.UUID
