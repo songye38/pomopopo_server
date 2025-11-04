@@ -211,8 +211,8 @@ def sync_completed_flag(mapper, connection, target):
 @event.listens_for(UserPomodoroLog, "after_update")
 def update_user_stats_on_finish(mapper, connection, target):
     """뽀모도로 로그 완료 시 유저 통계 갱신 및 자동 생성"""
-    # 1️⃣ 완료된 로그가 아닐 경우 무시
-    if target.status != SessionStatus.COMPLETED:
+    # ✅ 상태가 COMPLETED인지 확인 (Enum 혹은 문자열 둘 다 처리)
+    if str(target.status) not in [SessionStatus.COMPLETED, "completed"]:
         return
 
     user_id = str(target.user_id)
@@ -220,10 +220,12 @@ def update_user_stats_on_finish(mapper, connection, target):
     finished_at = target.finished_at or datetime.utcnow()
     new_focus_rate = target.average_focus_rate or 0  # 새로 완료된 세션의 평균 집중률
 
-    # 2️⃣ user_stats 레코드가 없으면 자동 생성 + 통계 갱신
-    connection.execute(text("""
+    # ✅ 통계 자동 생성 및 업데이트 (upsert)
+    connection.execute(
+        text("""
         INSERT INTO user_stats (
-            user_id, total_pomodoros, total_sessions, total_focus_duration, average_focus_rate, last_active_at
+            user_id, total_pomodoros, total_sessions,
+            total_focus_duration, average_focus_rate, last_active_at
         )
         VALUES (:user_id, 1, 0, :focus, :focus_rate, :finished)
         ON CONFLICT (user_id)
@@ -235,9 +237,11 @@ def update_user_stats_on_finish(mapper, connection, target):
                 / (user_stats.total_pomodoros + 1)
             ),
             last_active_at = :finished
-    """), {
-        "user_id": user_id,
-        "focus": total_focus,
-        "focus_rate": new_focus_rate,
-        "finished": finished_at
-    })
+        """),
+        {
+            "user_id": user_id,
+            "focus": total_focus,
+            "focus_rate": new_focus_rate,
+            "finished": finished_at,
+        },
+    )
