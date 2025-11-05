@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, Body
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func,desc
 from datetime import datetime
 from uuid import UUID
 
 from app.db.database import get_db
 from app.auth.dependencies import get_current_user
-from app.db.models import User, UserPomodoroLog, SessionLog, Session, SessionStatus
-from app.db.schemas import StartPomodoroRequest, FinishSessionRequest,FinishPomodoroRequest
+from app.db.models import User, UserPomodoroLog, SessionLog, Session, SessionStatus,UserStats
+from app.db.schemas import StartPomodoroRequest, FinishSessionRequest,FinishPomodoroRequest,UserStatsResponse
 
 router = APIRouter(prefix="/logs", tags=["logs"])
 
@@ -131,7 +131,9 @@ def finish_pomodoro(
     }
 
 
-
+# --------------------------
+# 5️⃣ 이번 뽀모도로 정보 요약
+# --------------------------
 @router.get("/pomodoro/{log_id}/summary")
 def get_pomodoro_summary(log_id: UUID, db: Session = Depends(get_db)):
     """
@@ -158,7 +160,9 @@ def get_pomodoro_summary(log_id: UUID, db: Session = Depends(get_db)):
     }
 
 
-
+# --------------------------
+# 6️⃣ 피드백 저장하는 라우터
+# --------------------------
 @router.patch("/pomodoro/{log_id}/feedback")
 def update_pomodoro_feedback(
     log_id: UUID,
@@ -173,3 +177,27 @@ def update_pomodoro_feedback(
     log.rating = body.get("rating", log.rating)
     db.commit()
     return {"success": True}
+
+
+
+# --------------------------
+# 7️⃣ 로그인 유저 통계 조회
+# --------------------------
+@router.get("/user/me/stats", response_model=UserStatsResponse)
+def get_my_stats(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """로그인한 유저의 뽀모도로 통계 조회"""
+    stats = db.query(UserStats).filter(UserStats.user_id == current_user.id).first()
+    if not stats:
+        raise HTTPException(status_code=404, detail="User stats not found")
+    
+    return UserStatsResponse(
+        user_id=stats.user_id,
+        total_pomodoros=stats.total_pomodoros,
+        total_sessions=stats.total_sessions,
+        total_focus_duration_minutes=stats.total_focus_duration // 60,
+        average_focus_rate=stats.average_focus_rate,
+        last_active_at=stats.last_active_at,
+    )

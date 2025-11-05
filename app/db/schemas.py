@@ -6,6 +6,7 @@
 import uuid
 from pydantic import BaseModel, EmailStr
 from typing import List, Optional
+from datetime import datetime
 
 # -----------------------------
 # User 관련 스키마
@@ -103,3 +104,12 @@ class FinishSessionRequest(BaseModel):
 
 class FinishPomodoroRequest(BaseModel):
     log_id: uuid.UUID
+
+
+class UserStatsResponse(BaseModel):
+    user_id: uuid.UUID
+    total_pomodoros: int
+    total_sessions: int
+    total_focus_duration_minutes: int
+    average_focus_rate: int
+    last_active_at: Optional[datetime]
