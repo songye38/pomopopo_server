@@ -70,27 +70,36 @@ async def get_user_pomodoros(
 # --------------------------
 # 특정 뽀모도로 조회
 # --------------------------
-
 @router.get("/{pomodoro_id}", response_model=PomodoroOut)
 async def get_pomodoro_by_id(
     pomodoro_id: str = Path(..., description="조회할 뽀모도로 ID"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    # UUID 유효성 검증
     try:
-        pomodoro_uuid = UUID(pomodoro_id)  # 문자열 → UUID
+        pomodoro_uuid = UUID(pomodoro_id)
     except ValueError:
         raise HTTPException(status_code=400, detail="유효하지 않은 UUID입니다")
 
+    # 유저 소유 or 프리셋 둘 중 하나면 허용
     pomodoro = (
         db.query(Pomodoro)
-        .filter(Pomodoro.user_id == current_user.id, Pomodoro.id == pomodoro_uuid)
+        .filter(
+            Pomodoro.id == pomodoro_uuid,
+            sa.or_(
+                Pomodoro.user_id == current_user.id,
+                Pomodoro.is_preset == True
+            )
+        )
         .first()
     )
+
     if not pomodoro:
         raise HTTPException(status_code=404, detail="뽀모도로를 찾을 수 없습니다")
-    
+
     return pomodoro
+
 
 
 # --------------------------
