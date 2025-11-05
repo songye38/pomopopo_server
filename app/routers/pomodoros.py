@@ -1,6 +1,7 @@
 # Pomodoro 생성 / 조회 / 수정 / 삭제
 
 from fastapi import APIRouter, Depends
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.db.schemas import PomodoroCreate, PomodoroOut,PomodoroUpdate
@@ -87,7 +88,7 @@ async def get_pomodoro_by_id(
         db.query(Pomodoro)
         .filter(
             Pomodoro.id == pomodoro_uuid,
-            sa.or_(
+            or_(
                 Pomodoro.user_id == current_user.id,
                 Pomodoro.is_preset == True
             )
