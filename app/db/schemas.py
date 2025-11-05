@@ -59,7 +59,7 @@ class SessionOut(BaseModel):
 
 # 세션 업데이트용
 class SessionUpdate(BaseModel):
-    id: Optional[uuid.UUID]  # 기존 세션이면 id, 새로 추가되는 세션이면 None
+    id: Optional[int] = None
     type_id: int
     goal: str
     duration: int
